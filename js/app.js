@@ -1,5 +1,6 @@
 
 (function() {
+	initializeAlarm();
     var page = document.getElementById('mainPage'),
         sectionChanger = document.getElementById('mainPage');
 
@@ -14,25 +15,23 @@
 var main = document.getElementById("scroller");
 var pages = main.getElementsByClassName("paging");
 
-//var pages = main.getElementsByClassName("ui-page");
-
 
 function paging(page) {
     var selectedPage = page.getAttribute('data-page-id');
     var currentPage = document.getElementsByClassName("ui-page-active");
     currentPage[0].className = currentPage[0].className.replace(" ui-page-active", "");
-    var nowPage;
+var pageBind;
     switch (selectedPage) {
         case "event":
-            var pageBind = document.getElementById("eventPage");
+            pageBind = document.getElementById("eventPage");
             pageBind.classList.add("ui-page-active");
             break;
         case "news":
-            var pageBind = document.getElementById("newsPage");
+            pageBind = document.getElementById("newsPage");
             pageBind.classList.add("ui-page-active");
             break;
         case "reminder":
-            var pageBind = document.getElementById("reminderPage");
+            pageBind = document.getElementById("reminderPage");
             pageBind.classList.add("ui-page-active");
             getReminder();	
             break;
@@ -125,89 +124,18 @@ function paging(page) {
 }());
 
 
-function getReminder(){
-	var dataReminder;
-	  var xhttp = new XMLHttpRequest();
-	  xhttp.onreadystatechange = function() {
-	    if (this.readyState == 4 && this.status == 200) {
-	      var data = this.responseText;
-	      var jsonResponse = JSON.parse(data);
-	      dataReminder =  jsonResponse.result;
-	      createMainPageReminder(dataReminder);
-	    }
-	  };
-	  
-	  xhttp.open("GET", "http://comrades-api.azurewebsites.net/v2/reminder/user/21", true);
-	  xhttp.send();
+
+function alarmDetail(index){
+	console.log(dataReminder[index]);
 	
+	if (dataReminder[index].waktu_reminder === "8") {
+		three_alarm_perday(index);
+	} else {
+		alert('Belum Dibuat cuk');
+	}
+	
+
 }
-
-
-function createMainPageReminder(data) {
-		var createAlarmUI = document.getElementById('ui-listview');
-		var dataList = '';
-		var dataObat = data;
-		
-		for(var i=0;i < data.length;i++){
-			var merek = data[i].obat.merek;
-			console.log(data[i]);
-			dataList += "<li class='li-has-multiline li-has-toggle menu-obat' data-id='"+i+"' style='margin-top:30px !important;text-align:center !important;'"+
-			    "<label style='height: 10px !important;text-align:center !important;'>" +
-				    "<div class='alarm-list' style='width:360px !important;text-align:center !important;'>"+
-				        "<div class='time-container' style='text-align:center !important;width:290px !important;'>"+
-				        	"<center><span style='font-size:50px;' >"+merek+"</span></center>" +
-				        "</div>" +
-				    "</div>"+
-				"</label>"+
-			"</li>";
-			
-		}
-		
-		createAlarmUI.innerHTML = dataList;
-		
-		
-//		var menu_obat =document.getElementById('menu-obat');
-	
-	
-//		function dataReminder()
-		
-//		menu_obat.addEventListener('click', function(){
-//			var dataId = document.getElementById('')
-//			console.log(this);
-//			var sekarang = moment().format(dataObat[i].jam_mulai+' hh:mm:ss');
-//			var add2 = moment(sekarang).add(dataObat[i].waktu_reminder, 'hours').format('YYYY-MM-DD hh:mm:ss');;
-//			var add3 = moment(add2).add(2, 'hours').format('YYYY-MM-DD hh:mm:ss');;
-//			console.log(dataObat[i].jam_mulai);
-//			console.log(sekarang);
-//			console.log(add2);
-//			console.log(add3);
-//			var dataList = '';		
-//			dataList = 
-//			"<li class='li-has-multiline li-has-toggle'>"+
-//            "<label>"+
-//                "<div class='alarm-list'>"+
-//                    "<div class='time-container'>"+
-//                     "   <span class='time'>7:45</span>"+
-//                      "  <span class='ampm'>AM</span>"+
-//                   " </div>"+
-//                   " <div class='li-text-sub ui-li-sub-text date-container'>"+
-//                   "     <span class='normal'>Wed, 6 May</span>"+
-//                   " </div>"+
-//                "</div>"+
-//               " <div class='ui-toggleswitch'>"+
-//               "     <input type='checkbox' class='ui-switch-input'>"+
-//               "     <div class='ui-switch-button'></div>"+
-//               " </div>"+
-//            "</label>"+
-//        "</li>";
-//			createAlarmUI.innerHTML = dataList;
-//		});
-		
-		
-}
-
-
-
 (function() {
     /**
      * Event handler for tizenhwkey
@@ -218,15 +146,12 @@ function createMainPageReminder(data) {
         if (event.keyName === "back") {
             var page = document.getElementsByClassName('ui-page-active')[0],
                 pageid;
-            var menuObat = document.getElementById('menu-obat');
             
             pageid = page ? page.id : "";
             if (pageid === "main-page") {
                 try {
                     tizen.application.getCurrentApplication().exit();
                 } catch (ignore) {}
-            }else if(menuObat == null){
-            	getReminder();
             } else {
             	page.className = page.className.replace(" ui-page-active", "");
                 var mainPage = document.getElementById('mainPage');
@@ -277,6 +202,8 @@ function createMainPageReminder(data) {
         for (i = 1; i <= 7; i++) {
             repeatToggle = document.querySelector("#repeat" + i);
         }
+        
+  
     }
 
     // When page will be loaded, call 'init' function
